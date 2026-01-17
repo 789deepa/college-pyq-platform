@@ -21,3 +21,13 @@ Backend:
 cd backend
 npm install
 npm run dev
+
+Browser URL
+ → Router
+ → Route match
+ → Page component
+ → UI
+
+Page controls layout
+Component controls single item UI
+Data flows parent → child via props
