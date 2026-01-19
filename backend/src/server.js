@@ -1,9 +1,13 @@
-import app from "./app.js";
+
+import dotenv from 'dotenv';
+dotenv.config();
 import healthRouter from "./routes/health.js";
 
-const PORT = 5000;
+import app from "./app.js";
+import connectDB from "./config/db.js";
 
-app.use("/health", healthRouter);
+connectDB();
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} `);
