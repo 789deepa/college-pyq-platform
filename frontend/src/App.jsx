@@ -9,11 +9,13 @@ function App() {
     <BrowserRouter>
     <Navbar />
       <Routes>
+        <Route path="/" element={<BrowsePage />} />
         <Route path="/browse" element={<BrowsePage />} />
         <Route path="/upload" element={<UploadPage />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 
 export default App;

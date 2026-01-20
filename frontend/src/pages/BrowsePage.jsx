@@ -1,33 +1,31 @@
-import PaperCard from "../components/PaperCard";
+import { useEffect, useState } from 'react';
+import PaperCard from '../components/PaperCard';
 
-function BrowsePage () {
-    const fakePapers = [
-        { subject: 'DBMS', year: 2023, branch: 'IT', semester: 4},
-        { subject: 'OS', year: 2022, branch: 'Comp', semester: 5},
-    ];
+function BrowsePage() {
+  const [papers, setPapers] = useState([]);
 
-    return (
-        <div>
-            <h2> Browse Papers</h2>
+  useEffect(() => {
+    fetch('http://localhost:5000/papers')
+      .then(res => res.json())
+      .then(data => setPapers(data));
+  }, []);
 
-            {/* {Filters} */}
-            <div style={{ marginBottom: '20px'}}>
-                <select>
-                    <option>Year</option>
-                </select>
+  return (
+    <div>
+      <h2>Browse Papers</h2>
 
-                <select>
-                    <option>Branch</option>
-                </select>
-            </div>
-
-            {/* {Papers} */}
-
-            {fakePapers.map((paper, index) => (
-                <PaperCard key={index} {...paper} />
-            ))}
-        </div>
-    );
+      {papers.map(paper => (
+        <PaperCard
+          key={paper._id}
+          subject={paper.subject}
+          year={paper.year}
+          branch={paper.branch}
+          semester={paper.semester}
+          filePath={paper.filePath}
+        />
+      ))}
+    </div>
+  );
 }
 
-export default BrowsePage; 
+export default BrowsePage;

@@ -1,38 +1,57 @@
-function UploadPage () {
-    return (
-        <div>
-            <h2> Upload Paper</h2>
+import { useState } from 'react';
 
-            <form>
-                <div>
-                    <label>Subject</label><br/>
-                    <input type="text" />
-                </div>
+function UploadPage() {
+  const [formData, setFormData] = useState({
+    subject: '',
+    year: '',
+    branch: '',
+    semester: '',
+    pdf: null,
+  });
 
-                <div>
-                    <label>Year</label><br/>
-                    <input type="number" />
-                </div>
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
 
-                <div>
-                    <label>Branch</label><br/>
-                    <input type="text" />
-                </div>
+    if (name === 'pdf') {
+      setFormData(prev => ({ ...prev, pdf: files[0] }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
 
-                <div>
-                    <label>Semester</label><br/>
-                    <input type="number" />
-                </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-                <div>
-                    <label>PDF File</label><br/>
-                    <input type="file" />
-                </div>
+    const data = new FormData();
+    data.append('subject', formData.subject);
+    data.append('year', formData.year);
+    data.append('branch', formData.branch);
+    data.append('semester', formData.semester);
+    data.append('pdf', formData.pdf);
 
-                <button type="button"> Upload</button>
-            </form>
-        </div>
-    );
+    await fetch('http://localhost:5000/papers', {
+      method: 'POST',
+      body: data,
+    });
+
+    alert('Upload successful');
+  };
+
+  return (
+    <div>
+      <h2>Upload Paper</h2>
+
+      <form onSubmit={handleSubmit}>
+        <input name="subject" placeholder="Subject" onChange={handleChange} />
+        <input name="year" type="number" placeholder="Year" onChange={handleChange} />
+        <input name="branch" placeholder="Branch" onChange={handleChange} />
+        <input name="semester" type="number" placeholder="Semester" onChange={handleChange} />
+        <input name="pdf" type="file" onChange={handleChange} />
+
+        <button type="submit">Upload</button>
+      </form>
+    </div>
+  );
 }
 
 export default UploadPage;

@@ -31,3 +31,12 @@ Browser URL
 Page controls layout
 Component controls single item UI
 Data flows parent → child via props
+
+Backend dependancies
+mongoose → talk to MongoDB
+dotenv → env variables
+multer → file upload (used later)
+
+## Postman / Thunder Client
+Tools to send HTTP requests manually to your backend.
+
