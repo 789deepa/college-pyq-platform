@@ -40,3 +40,8 @@ multer → file upload (used later)
 ## Postman / Thunder Client
 Tools to send HTTP requests manually to your backend.
 
+- Upload papers (PDF)
+- Store metadata in MongoDB
+- Browse papers from database
+- Open PDFs in browser
+
