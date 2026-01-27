@@ -19,9 +19,10 @@ function UploadPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  try {
     const data = new FormData();
     data.append('subject', formData.subject);
     data.append('year', formData.year);
@@ -29,13 +30,19 @@ function UploadPage() {
     data.append('semester', formData.semester);
     data.append('pdf', formData.pdf);
 
-    await fetch('http://localhost:5000/papers', {
+    const res = await fetch('http://localhost:5000/papers', {
       method: 'POST',
       body: data,
     });
 
-    alert('Upload successful');
-  };
+    if (!res.ok) throw new Error('Upload failed');
+
+    window.location.href = '/browse';
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
 
   return (
     <div>
