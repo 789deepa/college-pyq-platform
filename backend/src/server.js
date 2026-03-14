@@ -1,7 +1,6 @@
 
 import dotenv from 'dotenv';
 dotenv.config();
-import healthRouter from "./routes/health.js";
 
 import app from "./app.js";
 import connectDB from "./config/db.js";

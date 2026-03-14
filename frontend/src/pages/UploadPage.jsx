@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { apiPath, parseResponseError } from '../lib/api';
 
 function UploadPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     subject: '',
     year: '',
@@ -8,6 +11,8 @@ function UploadPage() {
     semester: '',
     pdf: null,
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -17,45 +22,108 @@ function UploadPage() {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+
+    if (error) {
+      setError('');
+    }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const data = new FormData();
-    data.append('subject', formData.subject);
-    data.append('year', formData.year);
-    data.append('branch', formData.branch);
-    data.append('semester', formData.semester);
-    data.append('pdf', formData.pdf);
+    if (!formData.pdf) {
+      setError('Please choose a PDF file to upload.');
+      return;
+    }
 
-    const res = await fetch('http://localhost:5000/papers', {
-      method: 'POST',
-      body: data,
-    });
+    setIsUploading(true);
+    setError('');
 
-    if (!res.ok) throw new Error('Upload failed');
+    try {
+      const data = new FormData();
+      data.append('subject', formData.subject.trim());
+      data.append('year', formData.year);
+      data.append('branch', formData.branch.trim());
+      data.append('semester', formData.semester);
+      data.append('pdf', formData.pdf);
 
-    window.location.href = '/browse';
-  } catch (err) {
-    alert(err.message);
-  }
-};
+      const res = await fetch(apiPath('/papers'), {
+        method: 'POST',
+        body: data,
+      });
 
+      if (!res.ok) {
+        const message = await parseResponseError(res);
+        throw new Error(message);
+      }
+
+      setFormData({
+        subject: '',
+        year: '',
+        branch: '',
+        semester: '',
+        pdf: null,
+      });
+      navigate('/browse');
+    } catch (err) {
+      setError(err.message || 'Upload failed. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <div>
       <h2>Upload Paper</h2>
 
       <form onSubmit={handleSubmit}>
-        <input name="subject" placeholder="Subject" onChange={handleChange} />
-        <input name="year" type="number" placeholder="Year" onChange={handleChange} />
-        <input name="branch" placeholder="Branch" onChange={handleChange} />
-        <input name="semester" type="number" placeholder="Semester" onChange={handleChange} />
-        <input name="pdf" type="file" onChange={handleChange} />
+        <input
+          name="subject"
+          placeholder="Subject"
+          value={formData.subject}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="year"
+          type="number"
+          placeholder="Year"
+          value={formData.year}
+          onChange={handleChange}
+          min="1900"
+          max="2100"
+          required
+        />
+        <input
+          name="branch"
+          placeholder="Branch"
+          value={formData.branch}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="semester"
+          type="number"
+          placeholder="Semester"
+          value={formData.semester}
+          onChange={handleChange}
+          min="1"
+          max="12"
+          required
+        />
+        <input
+          name="pdf"
+          type="file"
+          accept="application/pdf,.pdf"
+          onChange={handleChange}
+          required
+        />
 
-        <button type="submit">Upload</button>
+        {error && <p style={{ color: 'crimson' }}>{error}</p>}
+
+        <button type="submit" disabled={isUploading}>
+          {isUploading ? 'Uploading...' : 'Upload'}
+        </button>
       </form>
     </div>
   );

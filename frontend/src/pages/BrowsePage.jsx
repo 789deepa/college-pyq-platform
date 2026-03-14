@@ -1,23 +1,48 @@
 import { useEffect, useState } from 'react';
 import PaperCard from '../components/PaperCard';
+import { apiPath, parseResponseError } from '../lib/api';
 
 function BrowsePage() {
-
   const [papers, setPapers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [filters, setFilters] = useState({
-  year: '',
-  branch: '',
-});
+    year: '',
+    branch: '',
+  });
 
   useEffect(() => {
-  const query = new URLSearchParams(filters).toString();
-  
+    const activeFilters = Object.fromEntries(
+      Object.entries(filters).filter(([, value]) => String(value).trim() !== '')
+    );
+    const query = new URLSearchParams(activeFilters).toString();
+    const controller = new AbortController();
 
+    async function loadPapers() {
+      setLoading(true);
+      setError('');
 
-  fetch(`http://localhost:5000/papers?${query}`)
-    .then(res => res.json())
-    .then(data => setPapers(data));
-}, [filters]);
+      try {
+        const res = await fetch(apiPath(`/papers${query ? `?${query}` : ''}`), {
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          throw new Error(await parseResponseError(res));
+        }
+        const data = await res.json();
+        setPapers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setError(err.message || 'Could not load papers.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadPapers();
+    return () => controller.abort();
+  }, [filters]);
 
   return (
     <div>
@@ -25,6 +50,7 @@ function BrowsePage() {
 
       <div style={{ marginBottom: '20px' }}>
         <select
+          value={filters.year}
           onChange={(e) =>
             setFilters(prev => ({ ...prev, year: e.target.value }))
           }
@@ -35,6 +61,7 @@ function BrowsePage() {
         </select>
           
         <select
+          value={filters.branch}
           onChange={(e) =>
             setFilters(prev => ({ ...prev, branch: e.target.value }))
           }
@@ -45,9 +72,13 @@ function BrowsePage() {
         </select>
       </div>
 
-{papers.length === 0 && <p>No papers match selected filters</p>}
+      {loading && <p>Loading papers...</p>}
+      {error && <p style={{ color: 'crimson' }}>{error}</p>}
+      {!loading && !error && papers.length === 0 && (
+        <p>No papers match selected filters</p>
+      )}
 
-      {papers.map(paper => (
+      {!loading && !error && papers.map((paper) => (
         <PaperCard
           key={paper._id}
           subject={paper.subject}
