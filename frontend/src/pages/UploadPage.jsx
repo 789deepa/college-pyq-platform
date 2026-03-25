@@ -73,58 +73,97 @@ function UploadPage() {
   };
 
   return (
-    <div>
-      <h2>Upload Paper</h2>
+    <div className="min-h-screen bg-[#0a0a0f] px-4 py-10 text-slate-200 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-md items-center justify-center">
+        <div className="w-full rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md sm:p-8">
+          <h2 className="mb-6 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-2xl font-bold text-transparent">
+            Upload Paper
+          </h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="subject"
-          placeholder="Subject"
-          value={formData.subject}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="year"
-          type="number"
-          placeholder="Year"
-          value={formData.year}
-          onChange={handleChange}
-          min="1900"
-          max="2100"
-          required
-        />
-        <input
-          name="branch"
-          placeholder="Branch"
-          value={formData.branch}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="semester"
-          type="number"
-          placeholder="Semester"
-          value={formData.semester}
-          onChange={handleChange}
-          min="1"
-          max="12"
-          required
-        />
-        <input
-          name="pdf"
-          type="file"
-          accept="application/pdf,.pdf"
-          onChange={handleChange}
-          required
-        />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+              name="subject"
+              placeholder="Subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+              name="year"
+              type="number"
+              placeholder="Year"
+              value={formData.year}
+              onChange={handleChange}
+              min="1900"
+              max="2100"
+              required
+            />
+            <input
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+              name="branch"
+              placeholder="Branch"
+              value={formData.branch}
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 outline-none transition-all duration-200 placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+              name="semester"
+              type="number"
+              placeholder="Semester"
+              value={formData.semester}
+              onChange={handleChange}
+              min="1"
+              max="12"
+              required
+            />
 
-        {error && <p style={{ color: 'crimson' }}>{error}</p>}
+            <label className="block cursor-pointer rounded-xl border border-dashed border-white/20 p-8 text-center text-slate-400 transition-all duration-200 hover:border-purple-500/50">
+              <span className="text-sm">
+                {formData.pdf ? formData.pdf.name : 'Click to choose PDF file'}
+              </span>
+              <input
+                className="hidden"
+                name="pdf"
+                type="file"
+                accept="application/pdf,.pdf"
+                onChange={handleChange}
+                required
+              />
+            </label>
 
-        <button type="submit" disabled={isUploading}>
-          {isUploading ? 'Uploading...' : 'Upload'}
-        </button>
-      </form>
+            {error && (
+              <p className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isUploading}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 py-3 text-base font-semibold text-white transition-all duration-200 hover:opacity-90 disabled:opacity-50"
+            >
+              {isUploading && (
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+                  <path d="M12 3A9 9 0 0121 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+              )}
+              <span className={isUploading ? 'opacity-70' : ''}>
+                {isUploading ? 'Uploading...' : 'Upload'}
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
