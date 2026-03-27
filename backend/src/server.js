@@ -1,3 +1,7 @@
+import authRouter from './routes/auth.js';
+
+// add with other routes
+app.use('/api/auth', authRouter);
 
 import dotenv from 'dotenv';
 dotenv.config();
