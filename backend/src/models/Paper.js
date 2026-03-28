@@ -7,6 +7,7 @@ const paperSchema = new mongoose.Schema(
     branch: { type: String, required: true },
     semester: { type: Number, required: true },
     filePath: { type: String, required: true },
+    uploadedBy: { type: String, required: true }, // 👈 added
   },
   { timestamps: true }
 );
@@ -14,3 +15,4 @@ const paperSchema = new mongoose.Schema(
 const Paper = mongoose.model('Paper', paperSchema);
 
 export default Paper;
+

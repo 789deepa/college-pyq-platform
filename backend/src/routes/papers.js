@@ -1,10 +1,12 @@
 import express from 'express';
 import upload from '../config/upload.js';
 import Paper from '../models/Paper.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/', upload.single('pdf'), async (req, res) => {
+// POST - upload paper (protected)
+router.post('/', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {    
     const subject = req.body?.subject?.trim();
     const branch = req.body?.branch?.trim();
@@ -25,6 +27,7 @@ router.post('/', upload.single('pdf'), async (req, res) => {
       branch,
       semester,
       filePath: `/uploads/${req.file.filename}`,
+      uploadedBy: req.user.email, // 👈 save who uploaded
     });
 
     res.status(201).json(paper);
@@ -33,6 +36,7 @@ router.post('/', upload.single('pdf'), async (req, res) => {
   }
 });
 
+// GET - fetch papers (public)
 router.get('/', async (req, res) => {
   try {
     const { year, branch, subject, semester } = req.query;
@@ -59,6 +63,28 @@ router.get('/', async (req, res) => {
 
     const papers = await Paper.find(filter).sort({ createdAt: -1 });
     res.json(papers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE - delete paper (protected, only uploader)
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const paper = await Paper.findById(req.params.id);
+
+    if (!paper) {
+      return res.status(404).json({ error: 'Paper not found' });
+    }
+
+    // Only uploader can delete
+    if (paper.uploadedBy !== req.user.email) {
+      return res.status(403).json({ error: 'Not allowed to delete this paper' });
+    }
+
+    await paper.deleteOne();
+    res.json({ message: 'Paper deleted successfully' });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
