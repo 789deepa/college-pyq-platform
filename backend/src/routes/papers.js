@@ -1,5 +1,5 @@
 import express from 'express';
-import upload from '../config/upload.js';
+import upload, { uploadToSupabase } from '../config/upload.js';
 import Paper from '../models/Paper.js';
 import authMiddleware from '../middleware/auth.js';
 
@@ -21,13 +21,16 @@ router.post('/', authMiddleware, upload.single('pdf'), async (req, res) => {
       return res.status(400).json({ error: 'File missing' });
     }
 
+    // Upload to Supabase instead of local disk
+    const fileUrl = await uploadToSupabase(req.file);
+
     const paper = await Paper.create({
       subject,
       year,
       branch,
       semester,
-      filePath: `/uploads/${req.file.filename}`,
-      uploadedBy: req.user.email, // 👈 save who uploaded
+      filePath: fileUrl, // 👈 Supabase public URL
+      uploadedBy: req.user.email,
     });
 
     res.status(201).json(paper);
@@ -77,7 +80,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Paper not found' });
     }
 
-    // Only uploader can delete
     if (paper.uploadedBy !== req.user.email) {
       return res.status(403).json({ error: 'Not allowed to delete this paper' });
     }

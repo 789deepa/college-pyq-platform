@@ -1,37 +1,43 @@
 import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import supabase from './supabase.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadsDir = path.join(__dirname, '../../uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: uploadsDir,
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + path.extname(file.originalname);
-        cb(null, uniqueName);
-    },
-});
+// Use memory storage instead of disk
+const storage = multer.memoryStorage();
 
 const upload = multer({
-    storage,
-    limits: {
-        fileSize: 10 * 1024 * 1024,
-    },
-    fileFilter: (req, file, cb) => {
-        const isPdf = file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname);
-        if (!isPdf) {
-            cb(new Error('Only PDF files are allowed'));
-            return;
-        }
-        cb(null, true);
-    },
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+  fileFilter: (req, file, cb) => {
+    const isPdf = file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname);
+    if (!isPdf) {
+      cb(new Error('Only PDF files are allowed'));
+      return;
+    }
+    cb(null, true);
+  },
 });
+
+// Helper function to upload PDF to Supabase
+export async function uploadToSupabase(file) {
+  const fileName = `${Date.now()}-${file.originalname}`;
+  
+  const { data, error } = await supabase.storage
+    .from('papers')
+    .upload(fileName, file.buffer, {
+      contentType: 'application/pdf',
+      upsert: false,
+    });
+
+  if (error) throw new Error(error.message);
+
+  // Get public URL
+  const { data: urlData } = supabase.storage
+    .from('papers')
+    .getPublicUrl(fileName);
+
+  return urlData.publicUrl;
+}
 
 export default upload;
