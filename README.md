@@ -1,47 +1,78 @@
-# college-pyq-platform
+# PYQ Vault 📚
 
-A platform to upload, browse, and manage previous year question papers.
+A platform for college students to upload and access 
+previous year question papers.
 
-## Tech Stack
-- React
-- Node.js
-- Express
-- MongoDB
+## 🔗 Live Demo
+[Coming soon]
 
-## Status
-Day 1: Foundation (UI + Server setup)
+## ✨ Features
+- Browse papers by Branch, Year, Semester & Subject
+- Upload PDFs (Google login required)
+- Delete your own uploaded papers
+- Mobile responsive dark UI
 
-## How to Run
-Frontend:
-cd frontend
-npm install
-npm run dev
+## 🛠️ Tech Stack
+**Frontend:** React, Vite, Tailwind CSS  
+**Backend:** Node.js, Express.js  
+**Database:** MongoDB Atlas  
+**Auth:** Google OAuth + JWT
 
-Backend:
-cd backend
-npm install
-npm run dev
+## 🚀 Getting Started
 
-Browser URL
- → Router
- → Route match
- → Page component
- → UI
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- Google Cloud OAuth credentials
 
-Page controls layout
-Component controls single item UI
-Data flows parent → child via props
+### Installation
 
-Backend dependancies
-mongoose → talk to MongoDB
-dotenv → env variables
-multer → file upload (used later)
+# Clone the repo
+git clone https://github.com/789deepa/college-pyq-platform.git
 
-## Postman / Thunder Client
-Tools to send HTTP requests manually to your backend.
+# Install backend dependencies
+cd backend && npm install
 
-- Upload papers (PDF)
-- Store metadata in MongoDB
-- Browse papers from database
-- Open PDFs in browser
+# Install frontend dependencies
+cd ../frontend && npm install
 
+### Environment Variables
+
+**Backend `.env`:**
+MONGO_URI=your_mongodb_uri
+PORT=5000
+ALLOWED_ORIGINS=http://localhost:5173
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+JWT_SECRET=your_jwt_secret
+
+**Frontend `.env`:**
+VITE_API_PREFIX=http://localhost:5000/api
+VITE_GOOGLE_CLIENT_ID=your_client_id
+
+### Run Locally
+# Backend
+cd backend && npm run dev
+
+# Frontend  
+cd frontend && npm run dev
+
+## 📁 Project Structure
+college-pyq-platform/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   └── routes/
+└── frontend/
+    └── src/
+        ├── components/
+        ├── lib/
+        └── pages/
+
+## 🤝 Contributing
+Pull requests welcome! 
+
+## 📄 License
+MIT
