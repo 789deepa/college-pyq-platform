@@ -1,5 +1,5 @@
 import multer from 'multer';
-import supabase from './supabase.js';
+import getSupabase from './supabase.js';
 
 // Use memory storage instead of disk
 const storage = multer.memoryStorage();
@@ -23,7 +23,7 @@ const upload = multer({
 export async function uploadToSupabase(file) {
   const fileName = `${Date.now()}-${file.originalname}`;
   
-  const { data, error } = await supabase.storage
+  const { data, error } = await getSupabase().storage
     .from('papers')
     .upload(fileName, file.buffer, {
       contentType: 'application/pdf',
@@ -33,7 +33,7 @@ export async function uploadToSupabase(file) {
   if (error) throw new Error(error.message);
 
   // Get public URL
-  const { data: urlData } = supabase.storage
+  const { data: urlData } = getSupabase().storage
     .from('papers')
     .getPublicUrl(fileName);
 
