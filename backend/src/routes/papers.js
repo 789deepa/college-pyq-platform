@@ -1,12 +1,12 @@
 import express from 'express';
 import upload, { uploadToSupabase } from '../config/upload.js';
 import Paper from '../models/Paper.js';
-import authMiddleware from '../middleware/auth.js';
+// import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
 // POST - upload paper (protected)
-router.post('/', authMiddleware, upload.single('pdf'), async (req, res) => {
+router.post('/', upload.single('pdf'), async (req, res) => {
   try {    
     const subject = req.body?.subject?.trim();
     const branch = req.body?.branch?.trim();
@@ -30,7 +30,7 @@ router.post('/', authMiddleware, upload.single('pdf'), async (req, res) => {
       branch,
       semester,
       filePath: fileUrl, // 👈 Supabase public URL
-      uploadedBy: req.user.email,
+      // uploadedBy: req.user.email,
     });
 
     res.status(201).json(paper);
@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
 });
 
 // DELETE - delete paper (protected, only uploader)
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const paper = await Paper.findById(req.params.id);
 
@@ -80,9 +80,9 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Paper not found' });
     }
 
-    if (paper.uploadedBy !== req.user.email) {
-      return res.status(403).json({ error: 'Not allowed to delete this paper' });
-    }
+    // if (paper.uploadedBy !== req.user.email) {
+    //   return res.status(403).json({ error: 'Not allowed to delete this paper' });
+    // }
 
     await paper.deleteOne();
     res.json({ message: 'Paper deleted successfully' });
