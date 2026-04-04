@@ -47,7 +47,7 @@ function UploadPage() {
       data.append('semester', formData.semester);
       data.append('pdf', formData.pdf);
 
-      const res = await fetch(apiPath('/papers'), {
+     const res = await fetch(apiPath('/papers'), {
         method: 'POST',
         body: data,
       });

@@ -1,38 +1,38 @@
 import { Link } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
-import { useState } from 'react';
-import { getUser, saveAuth, clearAuth } from '../lib/auth';
-import { apiPath } from '../lib/api';
+// import { GoogleLogin } from '@react-oauth/google';
+// import { useState } from 'react';
+// import { getUser, saveAuth, clearAuth } from '../lib/auth';
+// import { apiPath } from '../lib/api';
 
 function Navbar() {
-  const [user, setUser] = useState(() => getUser());
+  // const [user, setUser] = useState(() => getUser());
 
-  const handleLoginSuccess = async (credentialResponse) => {
-    try {
-      const res = await fetch(apiPath('/auth/google'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialResponse.credential }),
-      });
+  // const handleLoginSuccess = async (credentialResponse) => {
+  //   try {
+  //     const res = await fetch(apiPath('/auth/google'), {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ credential: credentialResponse.credential }),
+  //     });
 
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.message || 'Login failed');
-        return;
-      }
+  //     if (!res.ok) {
+  //       const err = await res.json();
+  //       alert(err.message || 'Login failed');
+  //       return;
+  //     }
 
-      const { token, user } = await res.json();
-      saveAuth(token, user);
-      setUser(user);
-    } catch (_err) {
-      alert('Login failed. Try again.');
-    }
-  };
+  //     const { token, user } = await res.json();
+  //     saveAuth(token, user);
+  //     setUser(user);
+  //   } catch (_err) {
+  //     alert('Login failed. Try again.');
+  //   }
+  // };
 
-  const handleLogout = () => {
-    clearAuth();
-    setUser(null);
-  };
+  // const handleLogout = () => {
+  //   clearAuth();
+  //   setUser(null);
+  // };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0a0a0f]/80 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
@@ -53,7 +53,7 @@ function Navbar() {
           </Link>
 
           {/* Only show Upload link if logged in */}
-          {user && (
+          {(
             <Link
               to="/upload"
               className="inline-flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 sm:flex-none"
@@ -63,7 +63,7 @@ function Navbar() {
           )}
 
           {/* Login / User info */}
-          {user ? (
+          {/* {user ? (
             <div className="flex items-center gap-2">
               <img
                 src={user.picture}
@@ -89,7 +89,7 @@ function Navbar() {
               shape="pill"
               size="medium"
             />
-          )}
+          )} */}
         </div>
       </div>
     </nav>
