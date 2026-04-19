@@ -15,7 +15,7 @@ previous year question papers.
 ## 🛠️ Tech Stack
 **Frontend:** React, Vite, Tailwind CSS  
 **Backend:** Node.js, Express.js  
-**Database:** MongoDB Atlas  
+**Database:** MongoDB Atlas, Supabase   
 **Auth:** Google OAuth + JWT
 
 ## 🚀 Getting Started
@@ -73,6 +73,3 @@ college-pyq-platform/
 
 ## 🤝 Contributing
 Pull requests welcome! 
-
-## 📄 License
-MIT
