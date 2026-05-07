@@ -1,7 +1,6 @@
 import express from 'express';
 import upload, { uploadToSupabase } from '../config/upload.js';
 import Paper from '../models/Paper.js';
-// import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
