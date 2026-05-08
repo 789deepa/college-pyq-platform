@@ -1,11 +1,12 @@
 import express from 'express';
 import upload, { uploadToSupabase } from '../config/upload.js';
 import Paper from '../models/Paper.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
 // POST - upload paper (protected)
-router.post('/', upload.single('pdf'), async (req, res) => {
+router.post('/', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {    
     const subject = req.body?.subject?.trim();
     const branch = req.body?.branch?.trim();
@@ -29,7 +30,7 @@ router.post('/', upload.single('pdf'), async (req, res) => {
       branch,
       semester,
       filePath: fileUrl, // 👈 Supabase public URL
-      // uploadedBy: req.user.email,
+      uploadedBy: req.user.email,
     });
 
     res.status(201).json(paper);

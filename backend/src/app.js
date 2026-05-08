@@ -9,32 +9,7 @@ import authRouter from './routes/auth.js';
 
 const app = express();
 
-const allowedOrigins = new Set(
-  (process.env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean)
-);
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow server-to-server calls and local dev hosts.
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-
-      const isLocalhostOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-      if (isLocalhostOrigin || allowedOrigins.has(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error('Origin not allowed by CORS'));
-    },
-  })
-);
+app.use(cors());
 
 app.use(express.json());
 
