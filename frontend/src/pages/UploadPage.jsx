@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiPath, parseResponseError } from '../lib/api';
+import { getToken } from '../lib/auth';
 
 function UploadPage() {
   const navigate = useNavigate();
@@ -40,6 +41,11 @@ function UploadPage() {
     setError('');
 
     try {
+      const token = getToken();
+      if (!token) {
+        throw new Error('Please sign in before uploading.');
+      }
+
       const data = new FormData();
       data.append('subject', formData.subject.trim());
       data.append('year', formData.year);
@@ -49,6 +55,9 @@ function UploadPage() {
 
      const res = await fetch(apiPath('/papers'), {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: data,
       });
 
