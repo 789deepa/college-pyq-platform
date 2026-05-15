@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import PaperCard from '../components/PaperCard';
 import { apiPath, parseResponseError } from '../lib/api';
+import { getToken, getUser } from '../lib/auth';
 
 function BrowsePage() {
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState('');
+  const currentUser = getUser();
   const [filters, setFilters] = useState({
     year: '',
     branch: '',
@@ -54,6 +57,35 @@ function BrowsePage() {
       paper.subject.toLowerCase().includes(filters.subject.toLowerCase());
     return matchYear && matchBranch && matchSemester && matchSubject;
   });
+
+  const handleDelete = async (paperId) => {
+    const token = getToken();
+    if (!token) {
+      alert('Please login to delete your uploads.');
+      return;
+    }
+
+    const confirmed = window.confirm('Delete this paper? This cannot be undone.');
+    if (!confirmed) return;
+
+    setDeletingId(paperId);
+    try {
+      const res = await fetch(apiPath(`/papers/${paperId}`), {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        throw new Error(await parseResponseError(res));
+      }
+
+      setPapers((prev) => prev.filter((paper) => paper._id !== paperId));
+    } catch (err) {
+      alert(err.message || 'Could not delete paper.');
+    } finally {
+      setDeletingId('');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] px-4 pb-10 pt-8 text-slate-200 sm:px-6 lg:px-8">
@@ -180,6 +212,12 @@ function BrowsePage() {
                 branch={paper.branch}
                 semester={paper.semester}
                 filePath={paper.filePath}
+                canDelete={
+                  Boolean(currentUser?.email) &&
+                  String(paper.uploadedBy || '').toLowerCase() === String(currentUser.email).toLowerCase()
+                }
+                onDelete={() => handleDelete(paper._id)}
+                isDeleting={deletingId === paper._id}
               />
             ))}
           </div>

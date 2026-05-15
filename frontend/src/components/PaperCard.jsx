@@ -1,4 +1,4 @@
-function PaperCard({ subject, year, branch, semester, filePath }) {
+function PaperCard({ subject, year, branch, semester, filePath, canDelete = false, onDelete, isDeleting = false }) {
   const pdfUrl = filePath?.startsWith('http') ? filePath : filePath || '#';
 
   return (
@@ -27,6 +27,17 @@ function PaperCard({ subject, year, branch, semester, filePath }) {
       >
         Open PDF
       </a>
+
+      {canDelete ? (
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={isDeleting}
+          className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-red-500/40 bg-red-500/10 py-2 font-medium text-red-300 transition-all duration-200 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </button>
+      ) : null}
     </div>
   );
 }
