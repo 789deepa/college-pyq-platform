@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
 });
 
 // DELETE - delete paper (protected, only uploader)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const paper = await Paper.findById(req.params.id);
 
@@ -80,9 +80,12 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Paper not found' });
     }
 
-    // if (paper.uploadedBy !== req.user.email) {
-    //   return res.status(403).json({ error: 'Not allowed to delete this paper' });
-    // }
+    const uploaderEmail = String(paper.uploadedBy || '').trim().toLowerCase();
+    const requestUserEmail = String(req.user?.email || '').trim().toLowerCase();
+
+    if (!requestUserEmail || uploaderEmail !== requestUserEmail) {
+      return res.status(403).json({ error: 'Not allowed to delete this paper' });
+    }
 
     await paper.deleteOne();
     res.json({ message: 'Paper deleted successfully' });
